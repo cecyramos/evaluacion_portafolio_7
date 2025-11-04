@@ -1,0 +1,55 @@
+1.	Describir las características fundamentales de la integración del framework Django con bases de datos.
+o	Explicar cómo Django se integra con diferentes sistemas de bases de datos, como SQLite, PostgreSQL o MySQL.
+
+Django se integra de forma sencilla y transparente con diferentes sistemas de bases de datos mediante su ORM.
+Este componente permite trabajar con datos usando clases y objetos de Python, sin necesidad de escribir directamente sentencias SQL.
+De esta manera, podemos interactuar con la base de datos de forma más intuitiva y segura.
+
+o	Describir cómo Django maneja las conexiones y operaciones con la base de datos a través de su ORM.
+
+El ORM de Django traduce automáticamente las operaciones sobre los modelos de Python a consultas SQL.
+Django maneja las conexiones a la base de datos de forma automática abriendo las conexiones cuando es necesario,
+reutilizandolas durante la petición, y cerrandolas al finalizar el ciclo de solicitud-respuesta.
+
+o	Ejemplo: Explicar cómo configurar el archivo settings.py para conectar Django con una base de datos y cómo se gestionan las conexiones.
+
+El archivo settings.py contiene la configuración del proyecto, incluyendo los parámetros de conexión a la base de datos.
+La configuración dependerá de la base de datos.
+
+MySQL
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'portafolio_db',                    # Nombre de la base de datos
+        'USER': 'root',                         # Usuario de MySQL
+        'PASSWORD': 'root',                     # Contraseña
+        'HOST': 'localhost',                    # Servidor de MySQL
+        'PORT': '3306',                         # Puerto por defecto
+    }
+}
+
+PostgreSQL
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'database name',
+        'USER': 'postgres',
+        'PASSWORD': 'root',
+        'HOST': 'localhost',
+        'PORT': '5432',
+    }
+}
+
+SQLite
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
+
+Una vez configurada la conexión, Django utiliza el ORM para ejecutar automáticamente las operaciones necesarias sobre la base de datos 
+a través de migraciones, generadas con los comandos python manage.py makemigrations y python manage.py migrate

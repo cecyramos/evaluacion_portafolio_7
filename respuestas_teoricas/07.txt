@@ -1,0 +1,26 @@
+7.	Reconocer las aplicaciones preinstaladas con el motor Django distinguiendo su utilidad como apoyo al desarrollo.
+o	Identificar y explicar el propósito de aplicaciones preinstaladas en Django, como django.contrib.admin, django.contrib.auth, django.contrib.sessions, entre otras.
+
+Django incluye una serie de aplicaciones preinstaladas que facilitan el desarrollo de proyectos web al ofrecer funcionalidades comunes sin tener que programarlas desde cero.
+Estas aplicaciones forman parte del paquete django.contrib y están listas para ser utilizadas una vez configuradas en el archivo settings.py.
+
+01. django.contrib.admin – Panel de administración
+Proporciona una interfaz web lista para administrar los datos de la aplicación.
+
+02. django.contrib.auth – Autenticación y autorización
+Gestiona todo lo relacionado con usuarios, contraseñas, permisos y grupos.
+
+03. django.contrib.sessions – Manejo de sesiones
+Permite guardar información temporal del usuario entre peticiones.
+
+04. django.contrib.messages – Sistema de mensajes
+Permite mostrar mensajes temporales a los usuarios, como notificaciones o confirmaciones de acciones.
+
+05. django.contrib.staticfiles – Archivos estáticos
+Gestiona archivos estáticos del proyecto, como imágenes, hojas de estilo y scripts.
+
+06. django.contrib.contenttypes
+Maneja los tipos de contenido de los modelos, lo que permite trabajar con permisos y relaciones genéricas entre modelos.
+
+07. django.contrib.sites
+Facilita la administración de múltiples sitios desde un mismo proyecto Django.
