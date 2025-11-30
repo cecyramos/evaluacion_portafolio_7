@@ -1,0 +1,169 @@
+DATOS PARA POBLAR LA BASE DE DATOS
+
+
+Instrucciones
+
+OPCION 1: 
+Manualmente desde la plataforma ejecutando el servidor http://127.0.0.1:8000/
+# Nota: Solo hay una vista para ingresar libros, los demás datos deben ser ingresados desde el admin o desde la shell
+
+OPCION 2: 
+Acceder al admin de Django: http://127.0.0.1:8000/admin/
+Ingresar con el superusuario creado
+Agregar los datos manualmente
+
+OPCION 3:
+Ejecutar la shell
+
+EDITORIALES, AUTORES, PERFILES PARA INGRESAR MANUALMENTE DESDE EL ADMIN
+
+EDITORIALES
+
+Editorial 1
+Nombre: Penguin Random House
+País: Estados Unidos
+Año de fundación: 1927
+
+Editorial 2
+Nombre: Planeta
+País: España
+Año de fundación: 1949
+
+Editorial 3
+Nombre: Alfaguara
+País: España
+Año de fundación: 1964
+
+
+AUTORES
+
+Autor 1
+Nombre: Gabriel
+Apellido: García Márquez
+Fecha de nacimiento: 1927-03-06
+Nacionalidad: Colombiano
+Biografía: Escritor y periodista colombiano, premio Nobel de Literatura 1982
+
+Autor 2
+Nombre: Isabel
+Apellido: Allende
+Fecha de nacimiento: 1942-08-02
+Nacionalidad: Chilena
+Biografía: Escritora chilena, una de las autoras más leídas del mundo
+
+Autor 3
+Nombre: Jorge Luis
+Apellido: Borges
+Fecha de nacimiento: 1899-08-24
+Nacionalidad: Argentino
+Biografía: Escritor argentino, uno de los autores más destacados de la literatura del siglo XX
+
+Autor 4
+Nombre: Pablo
+Apellido: Neruda
+Fecha de nacimiento: 1904-07-12
+Nacionalidad: Chileno
+Biografía: Poeta chileno, premio Nobel de Literatura 1971
+
+
+PERFILES DE AUTORES
+
+Perfil 1 (Gabriel García Márquez)
+Email: gabo@example.com
+Sitio web:
+Premios: Premio Nobel de Literatura (1982)
+
+Perfil 2 (Isabel Allende)
+Email: isabel@example.com
+Sitio web: https://www.isabelallende.com
+Premios: Premio Nacional de Literatura de Chile (2010)
+
+
+LIBROS PARA INGERSAR DESDE LA PLATAFORMA O DESDE EL ADMIN
+
+LIBROS
+
+Libro 1
+Título: Cien años de soledad
+ISBN: 9780060883287
+Fecha de publicación: 1967-06-05
+Número de páginas: 417
+Descripción: Historia de la familia Buendía a lo largo de siete generaciones en el pueblo ficticio de Macondo
+Editorial: Penguin Random House
+Autores: Gabriel García Márquez
+
+Libro 2
+Título: La casa de los espíritus
+ISBN: 9788401242267
+Fecha de publicación: 1982-10-01
+Número de páginas: 433
+Descripción: Saga familiar que abarca tres generaciones en Chile, mezclando realismo mágico y crítica social
+Editorial: Planeta
+Autores: Isabel Allende
+
+Libro 3
+Título: El Aleph
+ISBN: 9788420674261
+Fecha de publicación: 1949-06-25
+Número de páginas: 192
+Descripción: Colección de cuentos fantásticos que exploran temas filosóficos y metafísicos
+Editorial: Alfaguara
+Autores: Jorge Luis Borges
+
+Libro 4
+Título: El amor en los tiempos del cólera
+ISBN: 9780307389732
+Fecha de publicación: 1985-09-05
+Número de páginas: 368
+Descripción: Historia de amor que dura más de medio siglo entre Florentino Ariza y Fermina Daza
+Editorial: Penguin Random House
+Autores: Gabriel García Márquez
+
+Libro 5
+Título: Paula
+ISBN: 9788401240904
+Fecha de publicación: 1994-01-01
+Número de páginas: 371
+Descripción: Memorias escritas en forma de carta a su hija Paula durante su enfermedad
+Editorial: Planeta
+Autores: Isabel Allende
+
+
+DATOS PARA INGRESAR USANDO LA SHELL
+
+# Ejecutar: python manage.py shell
+
+from catalogo.models import Editorial, Autor, Libro, PerfilAutor
+from datetime import date
+
+# Crear Editoriales
+e1 = Editorial.objects.create(nombre="Penguin Random House", pais="Estados Unidos", anio_fundacion=1927)
+e2 = Editorial.objects.create(nombre="Planeta", pais="España", anio_fundacion=1949)
+e3 = Editorial.objects.create(nombre="Alfaguara", pais="España", anio_fundacion=1964)
+
+# Crear Autores
+a1 = Autor.objects.create(nombre="Gabriel", apellido="García Márquez", fecha_nacimiento=date(1927,3,6), nacionalidad="Colombiano", biografia="Escritor y periodista colombiano, premio Nobel de Literatura 1982")
+a2 = Autor.objects.create(nombre="Isabel", apellido="Allende", fecha_nacimiento=date(1942,8,2), nacionalidad="Chilena", biografia="Escritora chilena, una de las autoras más leídas del mundo")
+a3 = Autor.objects.create(nombre="Jorge Luis", apellido="Borges", fecha_nacimiento=date(1899,8,24), nacionalidad="Argentino", biografia="Escritor argentino, uno de los autores más destacados de la literatura del siglo XX")
+
+# Crear Perfiles
+PerfilAutor.objects.create(autor=a1, email="gabo@example.com", premios="Premio Nobel de Literatura (1982)")
+PerfilAutor.objects.create(autor=a2, email="isabel@example.com", sitio_web="https://www.isabelallende.com", premios="Premio Nacional de Literatura de Chile (2010)")
+
+# Crear Libros
+l1 = Libro.objects.create(titulo="Cien años de soledad", isbn="9780060883287", fecha_publicacion=date(1967,6,5), numero_paginas=417, descripcion="Historia de la familia Buendía a lo largo de siete generaciones", editorial=e1)
+l1.autores.add(a1)
+
+l2 = Libro.objects.create(titulo="La casa de los espíritus", isbn="9788401242267", fecha_publicacion=date(1982,10,1), numero_paginas=433, descripcion="Saga familiar que abarca tres generaciones en Chile", editorial=e2)
+l2.autores.add(a2)
+
+l3 = Libro.objects.create(titulo="El Aleph", isbn="9788420674261", fecha_publicacion=date(1949,6,25), numero_paginas=192, descripcion="Colección de cuentos fantásticos", editorial=e3)
+l3.autores.add(a3)
+
+l4 = Libro.objects.create(titulo="El amor en los tiempos del cólera", isbn="9780307389732", fecha_publicacion=date(1985,9,5), numero_paginas=368, descripcion="Historia de amor que dura más de medio siglo", editorial=e1)
+l4.autores.add(a1)
+
+l5 = Libro.objects.create(titulo="Paula", isbn="9788401240904", fecha_publicacion=date(1994,1,1), numero_paginas=371, descripcion="Memorias en forma de carta a su hija", editorial=e2)
+l5.autores.add(a2)
+
+print("¡Datos poblados exitosamente!")
