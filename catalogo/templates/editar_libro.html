@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block title %}Editar Libro{% endblock %}
+
+{% block content %}
+    <h1>Editar Libro</h1>
+    
+    <form method="post">
+        {% csrf_token %}
+        
+        <div class="mb-3">
+            <label class="form-label">Título</label>
+            <input type="text" name="titulo" class="form-control" value="{{ libro.titulo }}" required>
+        </div>
+        
+        <div class="mb-3">
+            <label class="form-label">ISBN</label>
+            <input type="text" name="isbn" class="form-control" value="{{ libro.isbn }}" required>
+        </div>
+        
+        <div class="mb-3">
+            <label class="form-label">Fecha de Publicación</label>
+            <input type="date" name="fecha_publicacion" class="form-control" value="{{ libro.fecha_publicacion|date:'Y-m-d' }}" required>
+        </div>
+        
+        <div class="mb-3">
+            <label class="form-label">Número de Páginas</label>
+            <input type="number" name="numero_paginas" class="form-control" value="{{ libro.numero_paginas }}" required>
+        </div>
+        
+        <div class="mb-3">
+            <label class="form-label">Descripción</label>
+            <textarea name="descripcion" class="form-control" rows="4">{{ libro.descripcion }}</textarea>
+        </div>
+        
+        <div class="mb-3">
+            <label class="form-label">Editorial</label>
+            <select name="editorial" class="form-select" required>
+                {% for editorial in editoriales %}
+                    <option value="{{ editorial.id }}" {% if editorial.id == libro.editorial.id %}selected{% endif %}>
+                        {{ editorial.nombre }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <div class="mb-3">
+            <label class="form-label">Autores</label>
+            <select name="autores" class="form-select" multiple size="5" required>
+                {% for autor in autores %}
+                    <option value="{{ autor.id }}" {% if autor in libro.autores.all %}selected{% endif %}>
+                        {{ autor.nombre }} {{ autor.apellido }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <button type="submit" class="btn btn-success">Actualizar</button>
+        <a href="{% url 'detalle_libro' libro.id %}" class="btn btn-secondary">Cancelar</a>
+    </form>
+{% endblock %}
