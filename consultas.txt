@@ -1,0 +1,173 @@
+# Ejecutar: python manage.py shell
+# Luego copiar y pegar estos comandos
+
+# ============================================
+# REQUERIMIENTO 5: CONSULTAS DE FILTRADO Y PERSONALIZADAS
+# ============================================
+
+# Importar modelos necesarios
+from catalogo.models import Libro, Autor, Editorial
+from django.db.models import Count, Avg, Q
+from django.db import connection
+
+# ----------------------------------------
+# 1. CONSULTAS BÁSICAS CON FILTER
+# ----------------------------------------
+
+# Filtrar libros por editorial
+libros_planeta = Libro.objects.filter(editorial__nombre="Planeta")
+print("Libros de editorial Planeta:")
+for libro in libros_planeta:
+    print(f"- {libro.titulo}")
+
+# Filtrar autores por nacionalidad
+autores_colombianos = Autor.objects.filter(nacionalidad="Colombiano")
+print("\nAutores colombianos:")
+for autor in autores_colombianos:
+    print(f"- {autor.nombre} {autor.apellido}")
+
+# ----------------------------------------
+# 2. CONSULTAS CON EXCLUDE
+# ----------------------------------------
+
+# Libros que NO son de editorial Planeta
+libros_no_planeta = Libro.objects.exclude(editorial__nombre="Planeta")
+print("\nLibros que NO son de Planeta:")
+for libro in libros_no_planeta:
+    print(f"- {libro.titulo} ({libro.editorial.nombre})")
+
+# ----------------------------------------
+# 3. CONSULTAS CON GET (un solo objeto)
+# ----------------------------------------
+
+# Obtener un libro específico por ISBN
+libro = Libro.objects.get(isbn="9780060883287")
+print(f"\nLibro encontrado: {libro.titulo}")
+
+# ----------------------------------------
+# 4. CONSULTAS CON Q OBJECTS (OR)
+# ----------------------------------------
+
+# Buscar libros que contengan "amor" O "cien" en el título
+libros_busqueda = Libro.objects.filter(
+    Q(titulo__icontains="amor") | Q(titulo__icontains="cien")
+)
+print("\nLibros con 'amor' o 'cien' en el título:")
+for libro in libros_busqueda:
+    print(f"- {libro.titulo}")
+
+# ----------------------------------------
+# 5. CONSULTAS CON ANNOTATE (agregar campos calculados)
+# ----------------------------------------
+
+# Contar cuántos libros tiene cada editorial
+editoriales_con_conteo = Editorial.objects.annotate(
+    total_libros=Count('libros')
+).order_by('-total_libros')
+
+print("\nLibros por editorial:")
+for editorial in editoriales_con_conteo:
+    print(f"- {editorial.nombre}: {editorial.total_libros} libros")
+
+# Contar cuántos libros escribió cada autor
+autores_con_conteo = Autor.objects.annotate(
+    total_libros=Count('libros')
+).filter(total_libros__gt=0)
+
+print("\nLibros por autor:")
+for autor in autores_con_conteo:
+    print(f"- {autor.nombre} {autor.apellido}: {autor.total_libros} libros")
+
+# ----------------------------------------
+# 6. CONSULTAS CON AGGREGATE (calcular totales)
+# ----------------------------------------
+
+# Promedio de páginas de todos los libros
+from django.db.models import Avg, Max, Min, Sum
+
+estadisticas = Libro.objects.aggregate(
+    promedio_paginas=Avg('numero_paginas'),
+    max_paginas=Max('numero_paginas'),
+    min_paginas=Min('numero_paginas'),
+    total_libros=Count('id')
+)
+
+print(f"\nEstadísticas de libros:")
+print(f"- Promedio páginas: {estadisticas['promedio_paginas']:.0f}")
+print(f"- Máximo páginas: {estadisticas['max_paginas']}")
+print(f"- Mínimo páginas: {estadisticas['min_paginas']}")
+print(f"- Total libros: {estadisticas['total_libros']}")
+
+# ----------------------------------------
+# 7. CONSULTAS SQL PERSONALIZADAS CON RAW
+# ----------------------------------------
+
+# Obtener libros con más de 300 páginas usando SQL
+libros_largos = Libro.objects.raw(
+    'SELECT * FROM catalogo_libro WHERE numero_paginas > 300'
+)
+
+print("\nLibros con más de 300 páginas (SQL Raw):")
+for libro in libros_largos:
+    print(f"- {libro.titulo}: {libro.numero_paginas} páginas")
+
+# ----------------------------------------
+# 8. CONSULTAS SQL CON CURSOR DIRECTO
+# ----------------------------------------
+
+# Consulta SQL personalizada con cursor
+with connection.cursor() as cursor:
+    cursor.execute('''
+        SELECT 
+            e.nombre as editorial,
+            COUNT(l.id) as total_libros,
+            AVG(l.numero_paginas) as promedio_paginas
+        FROM catalogo_editorial e
+        LEFT JOIN catalogo_libro l ON e.id = l.editorial_id
+        GROUP BY e.id, e.nombre
+        ORDER BY total_libros DESC
+    ''')
+    resultados = cursor.fetchall()
+
+print("\nEstadísticas por editorial (SQL Directo):")
+for fila in resultados:
+    print(f"- {fila[0]}: {fila[1]} libros, promedio {fila[2]:.0f} páginas")
+
+# ----------------------------------------
+# 9. CONSULTAS CON RELACIONES
+# ----------------------------------------
+
+# Obtener todos los libros de un autor específico
+autor = Autor.objects.get(apellido="García Márquez")
+libros_autor = autor.libros.all()
+
+print(f"\nLibros de {autor.nombre} {autor.apellido}:")
+for libro in libros_autor:
+    print(f"- {libro.titulo}")
+
+# Obtener todos los autores de un libro
+libro = Libro.objects.get(titulo="Cien años de soledad")
+autores_libro = libro.autores.all()
+
+print(f"\nAutores de '{libro.titulo}':")
+for autor in autores_libro:
+    print(f"- {autor.nombre} {autor.apellido}")
+
+# ----------------------------------------
+# 10. CONSULTA COMPLEJA COMBINADA
+# ----------------------------------------
+
+# Buscar libros publicados después de 1980, con más de 350 páginas,
+# ordenados por fecha de publicación
+libros_complejos = Libro.objects.filter(
+    fecha_publicacion__year__gt=1980,
+    numero_paginas__gt=350
+).select_related('editorial').prefetch_related('autores').order_by('-fecha_publicacion')
+
+print("\nLibros publicados después de 1980 con más de 350 páginas:")
+for libro in libros_complejos:
+    autores_nombres = ', '.join([f"{a.nombre} {a.apellido}" for a in libro.autores.all()])
+    print(f"- {libro.titulo} ({libro.fecha_publicacion.year})")
+    print(f"  Autores: {autores_nombres}")
+    print(f"  Editorial: {libro.editorial.nombre}")
+    print(f"  Páginas: {libro.numero_paginas}")
